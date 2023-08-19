@@ -8,6 +8,37 @@
 	chosen {
 		zephyr,shell-uart = &cdc_acm_uart0;
 	};
+
+&w25q64jvxgim {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <0x1>;
+		#size-cells = <0x1>;
+
+		boot_partition: parition@0 {
+			reg = <0x00000000 0x0000a000>;
+			label = "mcuboot";
+			read-only;
+		};
+
+		/* Slot 0 has an extra sector for mcuboot's move algorithm. */
+		slot0_partition: partition@a000 {
+			reg = <0x0000a000 0x00301000>;
+			label = "image-0";
+		};
+
+		slot1_partition: partition@30b000 {
+			reg = <0x0030b000 0x00300000>;
+			label = "image-1";
+		};
+
+		/* No swap using scratch! -PMW */
+
+		storage_partition: parition@60b000 {
+			reg = <0x0060b000 0x001f5000>;
+			label = "storage";
+		};
+	};
 };
 
 &zephyr_udc0 {
